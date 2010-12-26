@@ -1,17 +1,19 @@
-import time
 from multiprocessing import Process
-from asyncapp import running
+from asyncapp import queue
 
-def mi_funcion(running):
-    if not running.value:
-	running.value = 1
-	print "Building..."
-        import time; time.sleep(10)
-        print "Hola chavales"
-        running.value = 0
-    else:
-        print "Still building..."
-
+def mi_funcion(queue):
+    queue.put_nowait("Building...")
+    try:
+        import time; time.sleep(8)
+	queue.get()
+	queue.put_nowait("Hola Chavales")
+    except:
+        pass
+    
 def my_view(request):
-    Process(target=mi_funcion, args=(running,)).start()
+    if queue.empty():
+        Process(target=mi_funcion, args=(queue,)).start()
+    	print "Building..."
+    else:
+        print queue.get()
     return {'project':'asyncapp'}
