@@ -1,19 +1,18 @@
-from multiprocessing import Lock, Process
+from multiprocessing import Value, Process
 
-lock = Lock()
-acquired = False
+alive = Value('B', 0)
 
 def mi_funcion():
-    global acquired
-    if not acquired:
-        acquired = lock.acquire()
-        print "Building..."
+        print "Build started"
         import time; time.sleep(10)
         print "Hola chavales"
-        acquired = lock.release()
-    else:
-        print "Still building..."
+        alive.value = False
 
 def my_view(request):
-    Process(target=mi_funcion).start()
+    global alive
+    if not alive.value:
+        alive.value = True
+        Process(target=mi_funcion).start()
+    else:
+        print("Still building...")
     return {'project':'asyncapp'}
