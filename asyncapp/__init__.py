@@ -1,5 +1,3 @@
-from multiprocessing import Value
-
 from pyramid.config import Configurator
 from asyncapp.resources import Root
 
@@ -12,7 +10,3 @@ def main(global_config, **settings):
                     renderer='asyncapp:templates/mytemplate.pt')
     config.add_static_view('static', 'asyncapp:static')
     return config.make_wsgi_app()
-
-running = Value('B', 0)
-#lock = Lock()
-#queue = Queue(maxsize=1)
