@@ -9,7 +9,6 @@ def mi_funcion():
         alive.value = False
 
 def my_view(request):
-    global alive
     if not alive.value:
         alive.value = True
         Process(target=mi_funcion).start()
