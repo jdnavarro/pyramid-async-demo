@@ -1,19 +1,23 @@
 from multiprocessing import Process
-from asyncapp import queue
+from Queue import Queue
 
-def mi_funcion(queue):
-    queue.put_nowait("Building...")
-    try:
-        import time; time.sleep(8)
-	queue.get()
-	queue.put_nowait("Hola Chavales")
-    except:
-        pass
-    
+
+job = 0
+q = Queue(maxsize=2)
+
+def work():
+    global job
+    job = q.get()
+    import time; time.sleep(8)
+    print("Job done: {0}".format(job))
+
 def my_view(request):
-    if queue.empty():
-        Process(target=mi_funcion, args=(queue,)).start()
-    	print "Building..."
+    global job
+    if not q.full():
+        job += 1
+        q.put_nowait(job)
+        print("Job submited: {0}".format(job))
+        Process(target=work, args=(q,)).start()
     else:
-        print queue.get()
+        print("Queue is full")
     return {'project':'asyncapp'}
