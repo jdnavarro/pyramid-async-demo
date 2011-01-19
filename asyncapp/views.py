@@ -6,7 +6,6 @@ q = Queue(maxsize=3)
 lock = Lock()
 
 def work():
-    global job
     import time; time.sleep(8)
     job = q.get()
     print("Job done: {0}".format(job))
@@ -21,10 +20,10 @@ def my_view(request):
     if not q.full():
         job += 1
         q.put_nowait(job)
-        print("Job {0} submitted and working on it".format(job))
         # Not running
         if lock.acquire(False):
             Process(target=work).start()
+            print("Job {0} submitted and working on it".format(job))
         else:
             print("Job {0} submitted while working".format(job))
     else:
